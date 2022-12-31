@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import test.students.persistence.UserDataRepo;
-import test.students.persistence.entity.Users;
 import test.students.utils.TokenUtil;
 
 import javax.servlet.*;
@@ -32,21 +30,21 @@ import java.util.Date;
 @Log4j2
 public class JwtFilter implements Filter{
 
+    @Value("${app.jwt.public_key_path:null}")
+    private String publicKeyPath;
 
-    
+    private byte[] keyBytes;
+
     private long lastPubKeyLoadedTime;
-
-    @Autowired
-    private UserDataRepo userLoginRepo;
 
 
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-            HttpServletRequest req = (HttpServletRequest) request;
-            String header = req.getHeader("Authorization");
-            Integer jwtValid = 200;
+        HttpServletRequest req = (HttpServletRequest) request;
+        String header = req.getHeader("Authorization");
+        Integer jwtValid = 200;
         if (header != null && header.startsWith("Bearer ")) {
             if (header != null) {
                 jwtValid = verifyJwt(header.replace("Bearer ", ""));
@@ -63,8 +61,6 @@ public class JwtFilter implements Filter{
         }
 
     }
-
-
     private Integer verifyJwt(String payload) {
         try {
             String[] arr = payload.split("\\.");
@@ -74,16 +70,42 @@ public class JwtFilter implements Filter{
             String message = header + "." + body;
             String signature = arr[2];
 
+            long current = System.currentTimeMillis();
+            long diff=current-lastPubKeyLoadedTime;
+            //public key will be refreshed again,
+            //if it was loaded more than 15 mins ago
+            if(diff>=(1000*60*15)){
+                keyBytes=null;
+                lastPubKeyLoadedTime=current;
+            }
+
+            if(keyBytes==null){
+                String rawKey = readPubKeyStringFromExtPath();
+
+                if(rawKey==null||rawKey.trim().length()==0){
+                    rawKey = readPubKeyInClassPath();
+
+                }
+                if(rawKey!=null) {
+                    String urlSafePubKeyString = rawKey.replace("-----BEGIN PUBLIC KEY-----", "")
+                            .replace("-----END PUBLIC KEY-----", "").replace("\n", "").trim();
+
+                    keyBytes = Base64.decodeBase64(urlSafePubKeyString);
+                }
+            }
+
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(keyBytes);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = kf.generatePublic(spec);
             Signature sign = Signature.getInstance("SHA256withRSA");
+
+            sign.initVerify(publicKey);
             sign.update(message.getBytes(StandardCharsets.UTF_8));
             byte[] toVerify = Base64.decodeBase64URLSafe(signature);
 
             boolean isValid = sign.verify(toVerify);
 
             boolean notExpired = notExpiredToken(body);
-
-            String userId = TokenUtil.retrieveUserId("Bearer "+payload);
-            Users userLogin =userLoginRepo.findByUserId(userId);
 
             if(isValid && notExpired ){
                 return 200;//success
@@ -97,9 +119,58 @@ public class JwtFilter implements Filter{
     }
 
 
+    private String readPubKeyStringFromExtPath() throws IOException {
 
+        if(publicKeyPath==null||publicKeyPath.trim().length()==0){
+            return null;
+        }
 
+        File file = new File(publicKeyPath);
+        if (!file.exists()) {
+            return null;
+        }
 
+        StringBuilder rawKey = new StringBuilder();
+        try ( BufferedReader bf = new BufferedReader(new FileReader(file))) {
+            while (true) {
+                String line = bf.readLine();
+                if (line == null) {
+                    break;
+                }
+                rawKey.append(line.trim());
+            }
+        }
+
+        String data = rawKey.toString();
+
+        if (data == null || data.trim().length() == 0) {
+            return null;
+        }
+
+        return data;
+
+    }
+
+    private String readPubKeyInClassPath() throws IOException {
+        StringBuilder rawKey = new StringBuilder();
+        try ( BufferedReader bf = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/public.key")))) {
+            while (true) {
+                String line = bf.readLine();
+                if (line == null) {
+                    break;
+                }
+                rawKey.append(line.trim());
+            }
+        }
+
+        String data = rawKey.toString();
+
+        if (data == null || data.trim().length() == 0) {
+            return null;
+        }
+
+        return data;
+    }
 
     private boolean notExpiredToken(String enc) {
         try {
@@ -129,3 +200,4 @@ public class JwtFilter implements Filter{
 
 
 }
+

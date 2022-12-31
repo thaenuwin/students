@@ -7,7 +7,7 @@ public interface StudentOpr {
 
     StudentResponse studentCreate (StudentCmd stucmd);
 
-    StudentResponse studentUpdate (StudentCmd stucmd);
+    StudentResponse studentUpdate (String id,StudentCmd stucmd);
 
     StudentResponse studentDelete (String stuId);
 
@@ -32,8 +32,6 @@ public interface StudentOpr {
     public enum StudentResponse {
         ERROR_USER_NOT_FOUND,
         ERROR_DUPLICATE_USER_FOUND,
-        ERROR_DUPLICATE_EMAIL_WITH_OTHER_USER,
-        ERROR_INVALID_PASSWORD,
         SUCCESS
     }
 }

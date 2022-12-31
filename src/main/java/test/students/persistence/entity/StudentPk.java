@@ -22,6 +22,12 @@ public class StudentPk implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 255)
+    @Column(name = "stu_id")
+    private String studentId;
+
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 255)
     @Column(name = "stu_name_txt")
     private String studentName;
 

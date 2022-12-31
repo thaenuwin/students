@@ -3,6 +3,7 @@ package test.students.persistence;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import test.students.opr.UserCreation;
 import test.students.persistence.entity.Users;
 import test.students.utils.PasswordUtil;
@@ -18,6 +19,7 @@ public class UserCreationImpl implements UserCreation {
     UserDataRepo userDataRepo;
 
     @Override
+    @Transactional
     public CreateUserResponse userCreate(UserCreationCmd usercmd) {
         ValidatorUtil.validate(usercmd);
 

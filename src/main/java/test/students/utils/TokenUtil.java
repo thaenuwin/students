@@ -47,19 +47,4 @@ public class TokenUtil {
         }
     }
 
-    public static final List<String> retrieveRoles(String authorization) {
-        Map<String, Object> map = retrieveUserInfo(authorization);
-        if (map != null) {
-            return (List) map.get("authorities");
-        }
-        return  new ArrayList<>();
-    }
-
-    public static final List<String> retrievePermissions(String authorization) {
-        Map<String, Object> map = retrieveUserInfo(authorization);
-        if (map != null) {
-            return (List) map.get("permissions");
-        }
-        return new ArrayList<>();
-    }
 }

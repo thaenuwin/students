@@ -29,10 +29,8 @@ public interface UserCreation {
         private String loginPassword;
     }
     public enum CreateUserResponse {
-        ERROR_USER_NOT_FOUND,
         ERROR_DUPLICATE_USER_FOUND,
         ERROR_DUPLICATE_EMAIL_WITH_OTHER_USER,
-        ERROR_INVALID_PASSWORD,
         SUCCESS
     }
 }

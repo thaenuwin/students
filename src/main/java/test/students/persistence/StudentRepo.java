@@ -9,6 +9,7 @@ import test.students.persistence.entity.Users;
 @Repository
 public interface StudentRepo extends JpaRepository<Students, StudentPk> {
 
-    Students findByStudentPk_StudentName(String stuName);
+    Students findByStudentPk_StudentNameAndStudentPk_StudentMajorAndStudentPk_StudentGrade(String stuName, String stuMajor, String stuGrade);
 
+    Students findByStudentPk_StudentId(String id);
 }
