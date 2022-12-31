@@ -51,7 +51,6 @@ public class TokenConfig {
             @Override
             public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {
                 final Map<String,Object> additionalInfo = new HashMap<>();
-                System.out.println(authentication.getOAuth2Request().getRequestParameters().toString());
                 Map<String,String> params = authentication.getOAuth2Request().getRequestParameters();
 
                 String principalJsonString= JsonUtil.toJsonString(authentication.getPrincipal());

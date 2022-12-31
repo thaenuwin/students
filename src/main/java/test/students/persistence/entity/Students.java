@@ -25,6 +25,7 @@ public class Students implements Serializable {
     @EmbeddedId
     protected StudentPk studentPk;
 
+
     @Size(max = 255)
     @Column(name = "stu_ph_num")
     private String stuPhoneNumber;
