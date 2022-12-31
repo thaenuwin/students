@@ -26,5 +26,8 @@ public class DateUtil {
         return FORMAT_PATTERN;
     }
 
+    public static final Date now(){
+        return Calendar.getInstance().getTime();
+    }
 
 }

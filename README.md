@@ -19,3 +19,5 @@ Alternatively, you can also run the following command from the terminal.
 mvn spring-boot:run
 ```
 The application is accessible on ``localhost:9999``
+
+The application is accessible on Swaager Url "http://localhost:9999/swagger-ui/index.html#/"
