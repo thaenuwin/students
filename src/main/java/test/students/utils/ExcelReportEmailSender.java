@@ -2,7 +2,6 @@ package test.students.utils;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import test.students.utils.email.EmailDetails;
 import test.students.utils.email.EmailService;
@@ -18,7 +17,7 @@ public class ExcelReportEmailSender {
 
     @Autowired
     EmailService emailService;
-    public void sendSingleSheetExcelReport(
+    public void sendSingleSheetExcelReport(String subj, String body,
             String sheetName,
             List<List<String>> dataContent,
             String emails)
@@ -30,9 +29,10 @@ public class ExcelReportEmailSender {
             bytes = os.toByteArray();
         }
         EmailDetails emailDetails = EmailDetails.builder()
+                .sheetName(sheetName)
                 .attachment(bytes)
-                .msgBody("hihi")
-                .subject( "Hay")
+                .msgBody(body)
+                .subject(subj )
                 .recipient(emails)
                 .build();
         emailService.sendMailWithAttachment(emailDetails);

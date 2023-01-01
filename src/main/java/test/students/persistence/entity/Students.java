@@ -19,31 +19,30 @@ import java.util.Date;
 @Builder(toBuilder = true)
 public class Students implements Serializable {
 
-    private static final long serialVersionUID = 1L;
 
 
     @EmbeddedId
-    protected StudentPk studentPk;
+    public StudentPk studentPk;
 
 
     @Size(max = 255)
     @Column(name = "stu_ph_num")
-    private String stuPhoneNumber;
+    public String stuPhoneNumber;
 
 
     @Column(name = "stu_enbl")
-    private int studentEnable;
+    public int studentEnable;
 
     @Basic(optional = false)
     @NotNull
     @Column(name = "crt_dttm")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    public Date createdDate;
     @Basic(optional = false)
     @NotNull
     @Column(name = "upd_dttm")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date updatedDate;
+    public Date updatedDate;
 
 
 }

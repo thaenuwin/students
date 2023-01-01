@@ -1,13 +1,12 @@
 package test.students.utils.email;
 
-
-import java.io.File;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 // Annotation
 @Service
+@Log4j2
 // Class
 // Implementing EmailService interface
 public class EmailServiceImpl implements EmailService {
@@ -40,32 +40,27 @@ public class EmailServiceImpl implements EmailService {
             mailMessage.setTo(details.getRecipient());
             mailMessage.setText(details.getMsgBody());
             mailMessage.setSubject(details.getSubject());
-            System.out.println(details.getRecipient());
             // Sending the mail
             javaMailSender.send(mailMessage);
 
-            System.out.println("Mail Sent Successfully...");
+            log.info("Mail Sent Successfully...");
             return "Mail Sent Successfully...";
         }
 
         // Catch block to handle the exceptions
         catch (Exception e) {
-            System.out.println(e.getMessage());
             return "Error while Sending Mail";
         }
     }
 
     // Method 2
     // To send an email with attachment
-    public String
-    sendMailWithAttachment(EmailDetails details)
+    public void sendMailWithAttachment(EmailDetails details)
     {
         // Creating a mime message
         MimeMessage mimeMessage
                 = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
-
-        System.out.println(details.getRecipient());
         try {
 
             // Setting multipart as true for attachments to
@@ -77,20 +72,15 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setText(details.getMsgBody());
             mimeMessageHelper.setSubject(
                     details.getSubject());
-            mimeMessageHelper.addAttachment("filename.xlsx",new ByteArrayResource(details.getAttachment()));
-
-
+            mimeMessageHelper.addAttachment(details.getSheetName(),new ByteArrayResource(details.getAttachment()));
             // Sending the mail
             javaMailSender.send(mimeMessage);
-            System.out.println("mail send success");
-            return "Mail sent Successfully";
+            log.info("mail send success");
         }
 
         // Catch block to handle MessagingException
         catch (MessagingException e) {
-
-            // Display message when exception occurred
-            return "Error while sending mail!!!";
+        log.error(e.getMessage());
         }
     }
 }

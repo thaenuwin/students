@@ -18,6 +18,8 @@ public class EmailDetails {
 
     // Class data members
     private String recipient;
+
+    private String sheetName;
     private String msgBody;
     private String subject;
     private byte[] attachment;

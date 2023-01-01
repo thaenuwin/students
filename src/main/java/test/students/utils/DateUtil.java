@@ -5,7 +5,6 @@
  */
 package test.students.utils;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,4 +29,7 @@ public class DateUtil {
         return Calendar.getInstance().getTime();
     }
 
+    public static final String format(Date date) {
+        return createDefaultDateFormatter().format(date);
+    }
 }
